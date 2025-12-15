@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  smartvacations-enterprise:
+    build: .
+    container_name: smartvacations-enterprise
+    ports:
+      - "8000:8000"
+    environment:
+      - FASTAPI_STATIC_DIR=/app/frontend/dist
+      - SQLALCHEMY_DATABASE_URL=sqlite:///./data/smartvacations.db
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - sv_db:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  sv_db:

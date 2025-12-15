@@ -1,0 +1,5 @@
+{
+  "name": "SmartVacations Enterprise",
+  "description": "Intelligent vacation allocation system using Integer Linear Programming to minimize financial impact.",
+  "requestFramePermissions": []
+}

@@ -1,54 +1,17 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # 1. Database Service
-  db:
-    image: postgres:15-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=smartvacations
-      - POSTGRES_PASSWORD=smartvacations
-      - POSTGRES_DB=smartvacations
-    ports:
-      - "5432:5432"
-
-  # 2. Redis Service (Message Broker & Result Backend)
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  # 3. API Service (FastAPI)
-  api:
-    build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./backend:/app
+  smartvacations-enterprise:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartvacations-enterprise
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://smartvacations:smartvacations@db:5432/smartvacations
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-
-  # 4. Worker Service (Celery)
-  worker:
-    build: ./backend
-    command: celery -A app.tasks worker --loglevel=info
+      - FASTAPI_STATIC_DIR=/app/frontend/dist
+      - SQLALCHEMY_DATABASE_URL=sqlite:///./smartvacations.db
+      - PYTHONUNBUFFERED=1
     volumes:
-      - ./backend:/app
-    environment:
-      - DATABASE_URL=postgresql://smartvacations:smartvacations@db:5432/smartvacations
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-      - api
-
-volumes:
-  postgres_data:
+      - ./backend/smartvacations.db:/app/backend/smartvacations.db:rw
+    restart: unless-stopped

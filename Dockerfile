@@ -22,7 +22,7 @@ COPY backend /app/backend
 COPY --from=frontend-build /app/dist /app/frontend/dist
 
 # Python deps
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Configure FastAPI to serve static frontend
 ENV FASTAPI_STATIC_DIR=/app/frontend/dist
